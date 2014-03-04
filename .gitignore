@@ -16,3 +16,8 @@
 *.exe
 *.out
 *.app
+ftrace
+create_syscall
+
+# Other
+syscall.h

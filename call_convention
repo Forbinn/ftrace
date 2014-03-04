@@ -1,0 +1,284 @@
+    (reg)           => reg
+    d(reg)          => reg + d
+    d(reg,s)        => (s * reg) + d            (s = 1|2|4|8)
+    d(reg1,reg2,s)  => reg1 + (s * reg2) + d    (s = 1|2|4|8)
+    d(,reg,s)       => (s * reg) + d            (s = 1|2|4|8)
+
+    // Validate
+  10ee4e:	ff 10                	callq  *(%rax)
+  39f9a9:	ff 11                	callq  *(%rcx)
+  3acab6:	ff 12                	callq  *(%rdx)
+  3b4883:	ff 13                	callq  *(%rbx)
+   70ac7:	ff 16                	callq  *(%rsi)
+   d3984:	ff 17                	callq  *(%rdi)
+
+    // Validate
+     641:	ff d0                	callq  *%rax
+  19768c:	ff d1                	callq  *%rcx
+  11405f:	ff d2                	callq  *%rdx
+  1a37c4:	ff d3                	callq  *%rbx
+  1645a2:	ff d5                	callq  *%rbp
+    1247:	ff d6                	callq  *%rsi
+   40cd4:	ff d7                	callq  *%rdi
+
+   // Validate
+     236:	ff 14 24             	callq  *(%rsp)
+
+    // Validate
+  354fe0:	ff 14 01             	callq  *(%rcx,%rax,1)
+  356410:	ff 14 03             	callq  *(%rbx,%rax,1)
+  2bda66:	ff 14 08             	callq  *(%rax,%rcx,1)
+   5ca40:	ff 14 28             	callq  *(%rax,%rbp,1)
+   13cd1:	ff 14 58             	callq  *(%rax,%rbx,2)
+  42a5a8:	ff 14 c1             	callq  *(%rcx,%rax,8)
+     55e:	ff 14 c3             	callq  *(%rbx,%rax,8)
+  1d5fe7:	ff 14 c8             	callq  *(%rax,%rcx,8)
+  36f070:	ff 14 d0             	callq  *(%rax,%rdx,8)
+  432c25:	ff 14 d8             	callq  *(%rax,%rbx,8)
+  2b816d:	ff 14 e8             	callq  *(%rax,%rbp,8)
+
+    // Validate
+  10690d:	ff 50 58             	callq  *0x58(%rax)
+  10a13c:	ff 51 18             	callq  *0x18(%rcx)
+  168df4:	ff 52 20             	callq  *0x20(%rdx)
+  108fff:	ff 53 48             	callq  *0x48(%rbx)
+  106aa6:	ff 55 68             	callq  *0x68(%rbp)
+  10e416:	ff 56 20             	callq  *0x20(%rsi)
+  281975:	ff 57 68             	callq  *0x68(%rdi)
+
+    // Validate
+  1ccc70:	ff 54 24 70          	callq  *0x70(%rsp)
+  1ccc7e:	ff 54 24 58          	callq  *0x58(%rsp)
+
+   // Validate
+  356b1c:	ff 54 01 08          	callq  *0x8(%rcx,%rax,1)
+   41633:	ff 54 02 08          	callq  *0x8(%rdx,%rax,1)
+  2b8ac6:	ff 54 03 08          	callq  *0x8(%rbx,%rax,1)
+  13f9ea:	ff 54 0d 08          	callq  *0x8(%rbp,%rcx,1)
+   75ae0:	ff 54 10 08          	callq  *0x8(%rax,%rdx,1)
+  1d48ce:	ff 54 18 08          	callq  *0x8(%rax,%rbx,1)
+   9ad5e:	ff 54 1d 2d          	callq  *0x2d(%rbp,%rbx,1)
+  38ae5a:	ff 54 c3 10          	callq  *0x10(%rbx,%rax,8)
+  2fb8ea:	ff 54 c3 f8          	callq  *-0x8(%rbx,%rax,8)
+    1eef:	ff 54 d0 c0          	callq  *-0x40(%rax,%rdx,8)
+  435123:	ff 54 d8 10          	callq  *0x10(%rax,%rbx,8)
+  46b077:	ff 54 d8 20          	callq  *0x20(%rax,%rbx,8)
+
+    // Validate
+  3c784e:	ff 15 2c 48 51 00    	callq  *0x51482c(%rip)        # 8dc080
+  3c787e:	ff 15 fc 47 51 00    	callq  *0x5147fc(%rip)        # 8dc080
+
+  // Validate
+      38:	ff 14 dd 00 00 00 00 	callq  *0x0(,%rbx,8)
+  401490:	ff 14 dd c0 0e 6b 00 	callq  *0x6b0ec0(,%rbx,8)
+
+    // Validate
+  19e464:	ff 14 25 28 04 00 00 	callq  *0x428
+   fd7f9:	ff 14 25 b8 00 00 00 	callq  *0xb8
+
+   // Validate
+  108760:	ff 90 78 05 00 00    	callq  *0x578(%rax)
+  110169:	ff 91 50 06 00 00    	callq  *0x650(%rcx)
+  13c088:	ff 92 88 04 00 00    	callq  *0x488(%rdx)
+  108e43:	ff 93 c8 01 00 00    	callq  *0x1c8(%rbx)
+  106d6c:	ff 95 88 00 00 00    	callq  *0x88(%rbp)
+     b58:	ff 95 20 ff ff ff    	callq  *-0xe0(%rbp)
+  14ac8f:	ff 95 78 ff ff ff    	callq  *-0x88(%rbp)
+
+    // Validate
+   f9c76:	ff 94 24 d8 03 00 00 	callq  *0x3d8(%rsp)
+   f9ef7:	ff 94 24 d0 03 00 00 	callq  *0x3d0(%rsp)
+
+    // Validate
+  2a3faa:	ff 94 04 10 6c 00 00 	callq  *0x6c10(%rsp,%rax,1)
+  2b87dc:	ff 94 03 70 24 00 00 	callq  *0x2470(%rbx,%rax,1)
+  363061:	ff 94 c1 80 00 00 00 	callq  *0x80(%rcx,%rax,8)
+   f8623:	ff 94 c3 18 0f 00 00 	callq  *0xf18(%rbx,%rax,8)
+   81fb3:	ff 94 c3 38 16 21 00 	callq  *0x211638(%rbx,%rax,8)
+  27658f:	ff 94 c5 58 02 00 00 	callq  *0x258(%rbp,%rax,8)
+     819:	ff 94 24 c8 29 00 00 	callq  *0x29c8(%rsp)
+  1a37e6:	ff 94 cb c8 18 00 00 	callq  *0x18c8(%rbx,%rcx,8)
+   76903:	ff 94 d0 b0 00 00 00 	callq  *0xb0(%rax,%rdx,8)
+   78938:	ff 94 d0 f0 00 00 00 	callq  *0xf0(%rax,%rdx,8)
+  318360:	ff 94 e8 80 00 00 00 	callq  *0x80(%rax,%rbp,8)
+  2b6f55:	ff 94 e9 80 00 00 00 	callq  *0x80(%rcx,%rbp,8)
+   76d1a:	ff 94 f0 d0 00 00 00 	callq  *0xd0(%rax,%rsi,8)
+
+    // Validate
+  20d4de:	41 ff 10             	callq  *(%r8)
+  207fdb:	41 ff 11             	callq  *(%r9)
+  22f51d:	41 ff 12             	callq  *(%r10)
+  18da98:	41 ff 13             	callq  *(%r11)
+   da169:	41 ff 16             	callq  *(%r14)
+  3be70a:	41 ff 17             	callq  *(%r15)
+
+    // Validate
+  11e155:	41 ff d0             	callq  *%r8
+  11c2db:	41 ff d1             	callq  *%r9
+  16f42f:	41 ff d2             	callq  *%r10
+  16f510:	41 ff d3             	callq  *%r11
+  10e430:	41 ff d4             	callq  *%r12
+  114be5:	41 ff d5             	callq  *%r13
+  135166:	41 ff d6             	callq  *%r14
+  125089:	41 ff d7             	callq  *%r15
+
+  // Validate
+  13fe6d:	41 ff 14 24          	callq  *(%r12)
+
+    // Validate
+  43176f:	41 ff 14 02          	callq  *(%r10,%rax,1)
+  14fed7:	41 ff 14 1e          	callq  *(%r14,%rbx,1)
+  3a4708:	41 ff 14 c0          	callq  *(%r8,%rax,8)
+  3a4506:	41 ff 14 c1          	callq  *(%r9,%rax,8)
+  4bf463:	41 ff 14 c2          	callq  *(%r10,%rax,8)
+  42aa68:	41 ff 14 c3          	callq  *(%r11,%rax,8)
+  172fc6:	41 ff 14 c4          	callq  *(%r12,%rax,8)
+  1e35bf:	41 ff 14 c6          	callq  *(%r14,%rax,8)
+  31631d:	41 ff 14 c7          	callq  *(%r15,%rax,8)
+  17b143:	41 ff 14 c8          	callq  *(%r8,%rcx,8)
+   f499d:	41 ff 14 cb          	callq  *(%r11,%rcx,8)
+  1e2d4a:	41 ff 14 ce          	callq  *(%r14,%rcx,8)
+     446:	41 ff 14 d4          	callq  *(%r12,%rdx,8)
+  400569:	41 ff 14 dc          	callq  *(%r12,%rbx,8)
+  2b732a:	41 ff 14 e9          	callq  *(%r9,%rbp,8)
+  3190f1:	41 ff 14 ef          	callq  *(%r15,%rbp,8)
+
+    // Validate
+  135c04:	41 ff 50 58          	callq  *0x58(%r8)
+  14fe69:	41 ff 51 58          	callq  *0x58(%r9)
+  115d8f:	41 ff 52 28          	callq  *0x28(%r10)
+  135872:	41 ff 53 58          	callq  *0x58(%r11)
+  109fa3:	41 ff 55 48          	callq  *0x48(%r13)
+  1087a9:	41 ff 56 18          	callq  *0x18(%r14)
+  108af3:	41 ff 57 08          	callq  *0x8(%r15)
+
+    // Validate
+  10bbcd:	41 ff 54 24 18       	callq  *0x18(%r12)
+  19fcdb:	41 ff 54 24 98       	callq  *-0x68(%r12)
+
+    // Validate
+   fbfa2:	41 ff 54 00 08       	callq  *0x8(%r8,%rax,1)
+  302eae:	41 ff 54 05 08       	callq  *0x8(%r13,%rax,1)
+  1f419c:	41 ff 54 04 08       	callq  *0x8(%r12,%rax,1)
+  3f2552:	41 ff 54 c5 00       	callq  *0x0(%r13,%rax,8)
+  2b7e82:	41 ff 54 ea 20       	callq  *0x20(%r10,%rbp,8)
+  179831:	41 ff 54 ee 20       	callq  *0x20(%r14,%rbp,8)
+
+    // Validate
+  1180ba:	41 ff 90 a0 00 00 00 	callq  *0xa0(%r8)
+  1255cd:	41 ff 91 d0 01 00 00 	callq  *0x1d0(%r9)
+  1701ce:	41 ff 92 48 05 00 00 	callq  *0x548(%r10)
+  125d59:	41 ff 93 c8 01 00 00 	callq  *0x1c8(%r11)
+  151358:	41 ff 95 a0 00 00 00 	callq  *0xa0(%r13)
+  124773:	41 ff 96 c8 01 00 00 	callq  *0x1c8(%r14)
+  1375df:	41 ff 97 e0 01 00 00 	callq  *0x1e0(%r15)
+
+    // Validate
+  1256c4:	41 ff 94 24 d0 01 00 	callq  *0x1d0(%r12)
+  1256cb:	00
+
+    // Validate
+  43b4b0:	41 ff 94 04 c8 02 00 	callq  *0x2c8(%r12,%rax,1)
+  43b4b7:	00
+   a5e12:	41 ff 94 c1 28 16 21 	callq  *0x211628(%r9,%rax,8)
+  19a479:	41 ff 94 c2 40 0d 00 	callq  *0xd40(%r10,%rax,8)
+   a6683:	41 ff 94 c3 38 16 21 	callq  *0x211638(%r11,%rax,8)
+  118972:	41 ff 94 c4 20 26 00 	callq  *0x2620(%r12,%rax,8)
+  13c27c:	41 ff 94 c5 a8 00 00 	callq  *0xa8(%r13,%rax,8)
+  13bf79:	41 ff 94 c6 a8 00 00 	callq  *0xa8(%r14,%rax,8)
+  19f0fc:	41 ff 94 c7 f8 19 00 	callq  *0x19f8(%r15,%rax,8)
+  2cb392:	41 ff 94 ca 18 21 00 	callq  *0x2118(%r10,%rcx,8)
+  2caed7:	41 ff 94 ce 18 21 00 	callq  *0x2118(%r14,%rcx,8)
+  19ee33:	41 ff 94 cf c8 18 00 	callq  *0x18c8(%r15,%rcx,8)
+  1a12a1:	41 ff 94 d7 f8 19 00 	callq  *0x19f8(%r15,%rdx,8)
+  1a3bc9:	41 ff 94 da 40 0d 00 	callq  *0xd40(%r10,%rbx,8)
+  1a39c7:	41 ff 94 db 40 0d 00 	callq  *0xd40(%r11,%rbx,8)
+  2b6fc9:	41 ff 94 eb 80 00 00 	callq  *0x80(%r11,%rbp,8)
+  40c80f:	41 ff 94 ef 18 02 00 	callq  *0x218(%r15,%rbp,8)
+
+    // Validate
+  35d6c5:	42 ff 14 00          	callq  *(%rax,%r8,1)
+  35e917:	42 ff 14 01          	callq  *(%rcx,%r8,1)
+  431b07:	42 ff 14 10          	callq  *(%rax,%r10,1)
+  2b7279:	42 ff 14 18          	callq  *(%rax,%r11,1)
+  120f26:	42 ff 14 c0          	callq  *(%rax,%r8,8)
+  42b3a9:	42 ff 14 c8          	callq  *(%rax,%r9,8)
+   9c45b:	42 ff 14 d0          	callq  *(%rax,%r10,8)
+  42ab27:	42 ff 14 d8          	callq  *(%rax,%r11,8)
+  31610c:	42 ff 14 e0          	callq  *(%rax,%r12,8)
+  2fbe9f:	42 ff 14 e8          	callq  *(%rax,%r13,8)
+  1143ea:	42 ff 14 f0          	callq  *(%rax,%r14,8)
+  113f5a:	42 ff 14 f8          	callq  *(%rax,%r15,8)
+
+    // Validate
+  2bdb7c:	42 ff 54 05 00       	callq  *0x0(%rbp,%r8,1)
+  11fd2d:	42 ff 54 38 18       	callq  *0x18(%rax,%r15,1)
+  11fdd9:	42 ff 54 38 08       	callq  *0x8(%rax,%r15,1)
+  2fd844:	42 ff 54 d0 f8       	callq  *-0x8(%rax,%r10,8)
+   af21c:	42 ff 54 d3 08       	callq  *0x8(%rbx,%r10,8)
+  433dd1:	42 ff 54 e0 10       	callq  *0x10(%rax,%r12,8)
+
+    // Validate
+   f8679:	42 ff 94 c3 58 0f 00 	callq  *0xf58(%rbx,%r8,8)
+   f8680:	00
+  363344:	42 ff 94 c5 40 38 00 	callq  *0x3840(%rbp,%r8,8)
+  35d68a:	42 ff 94 c8 80 00 00 	callq  *0x80(%rax,%r9,8)
+  2b74b8:	42 ff 94 d1 80 00 00 	callq  *0x80(%rcx,%r10,8)
+  31567d:	42 ff 94 d3 08 26 00 	callq  *0x2608(%rbx,%r10,8)
+   b29b6:	42 ff 94 d8 60 3f 05 	callq  *0x53f60(%rax,%r11,8)
+  1a26c8:	42 ff 94 db 40 19 00 	callq  *0x1940(%rbx,%r11,8)
+  2bd611:	42 ff 94 e0 80 00 00 	callq  *0x80(%rax,%r12,8)
+  2b77b4:	42 ff 94 e1 80 00 00 	callq  *0x80(%rcx,%r12,8)
+  2b704e:	42 ff 94 e8 80 00 00 	callq  *0x80(%rax,%r13,8)
+  150649:	42 ff 94 eb 80 01 00 	callq  *0x180(%rbx,%r13,8)
+  19a299:	42 ff 94 f8 40 0d 00 	callq  *0xd40(%rax,%r15,8)
+  2b74f7:	42 ff 94 f9 80 00 00 	callq  *0x80(%rcx,%r15,8)
+
+    // Validate
+  2bdbc3:	43 ff 14 03          	callq  *(%r11,%r8,1)
+  2b7ab4:	43 ff 14 08          	callq  *(%r8,%r9,1)
+  2b7ae2:	43 ff 14 0a          	callq  *(%r10,%r9,1)
+  430292:	43 ff 14 13          	callq  *(%r11,%r10,1)
+  43b6bd:	43 ff 14 14          	callq  *(%r12,%r10,1)
+  2b7245:	43 ff 14 18          	callq  *(%r8,%r11,1)
+  120316:	43 ff 14 c7          	callq  *(%r15,%r8,8)
+  2b822f:	43 ff 14 c8          	callq  *(%r8,%r9,8)
+  45c656:	43 ff 14 ca          	callq  *(%r10,%r9,8)
+   5a804:	43 ff 14 d3          	callq  *(%r11,%r10,8)
+  2b7b94:	43 ff 14 d9          	callq  *(%r9,%r11,8)
+   5a3d6:	43 ff 14 da          	callq  *(%r10,%r11,8)
+  2b7f3c:	43 ff 14 e1          	callq  *(%r9,%r12,8)
+  2b7374:	43 ff 14 e9          	callq  *(%r9,%r13,8)
+
+    // Validate
+  27550e:	43 ff 54 02 08       	callq  *0x8(%r10,%r8,1)
+  43b0a6:	43 ff 54 15 00       	callq  *0x0(%r13,%r10,1)
+  2b7563:	43 ff 54 d3 20       	callq  *0x20(%r11,%r10,8)
+  3a1bf7:	43 ff 54 d5 20       	callq  *0x20(%r13,%r10,8)
+  2b850d:	43 ff 54 da 20       	callq  *0x20(%r10,%r11,8)
+  2b854d:	43 ff 54 f3 20       	callq  *0x20(%r11,%r14,8)
+  2b75a2:	43 ff 54 fa 20       	callq  *0x20(%r10,%r15,8)
+
+    // Validate
+  43b8e4:	43 ff 94 0b 88 02 00 	callq  *0x288(%r11,%r9,1)
+  43b8eb:	00
+  43b437:	43 ff 94 1c 88 02 00 	callq  *0x288(%r12,%r11,1)
+  2c980b:	43 ff 94 c2 08 26 00 	callq  *0x2608(%r10,%r8,8)
+  3a336a:	43 ff 94 c4 58 41 00 	callq  *0x4158(%r12,%r8,8)
+  19fbe3:	43 ff 94 c5 78 1a 00 	callq  *0x1a78(%r13,%r8,8)
+  1a48aa:	43 ff 94 c6 60 1a 00 	callq  *0x1a60(%r14,%r8,8)
+  35dfe6:	43 ff 94 c7 40 38 00 	callq  *0x3840(%r15,%r8,8)
+  1a108a:	43 ff 94 cf c8 18 00 	callq  *0x18c8(%r15,%r9,8)
+   baf81:	43 ff 94 d1 38 16 21 	callq  *0x211638(%r9,%r10,8)
+  1a0da8:	43 ff 94 d4 40 19 00 	callq  *0x1940(%r12,%r10,8)
+  1a5734:	43 ff 94 d6 c8 18 00 	callq  *0x18c8(%r14,%r10,8)
+  19ef2b:	43 ff 94 d7 40 1a 00 	callq  *0x1a40(%r15,%r10,8)
+  2c9c04:	43 ff 94 de 08 26 00 	callq  *0x2608(%r14,%r11,8)
+  19eb8c:	43 ff 94 df 40 19 00 	callq  *0x1940(%r15,%r11,8)
+  2bd7d8:	43 ff 94 e0 80 00 00 	callq  *0x80(%r8,%r12,8)
+  2b781c:	43 ff 94 e1 80 00 00 	callq  *0x80(%r9,%r12,8)
+  2bde25:	43 ff 94 fb 80 00 00 	callq  *0x80(%r11,%r15,8)
+
+   7d0c1:	ff db                	lcallq *<internal disassembler error>
+   88e6a:	ff 1a                	lcallq *(%rdx)
+   8997f:	ff 19                	lcallq *(%rcx)
