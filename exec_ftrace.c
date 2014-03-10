@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Tue Mar 04 21:08:59 2014 vincent leroy
+** Last update Fri Mar 07 17:59:22 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -26,7 +26,7 @@ static bool do_nothing(t_prog *prog)
     return true;
 }
 
-static bool check_opcode(t_prog *prog)
+bool check_opcode(t_prog *prog)
 {
     static const t_opcode op[] = {
         //{0x000000000000050FUL, 0x000000000000FFFFUL, &check_syscall},         // syscall
@@ -74,7 +74,7 @@ static bool check_opcode(t_prog *prog)
     return true;
 }
 
-int get_off(unsigned long value)
+int CONST get_off(unsigned long value)
 {
     t_value val;
 

@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Tue Mar 04 20:40:25 2014 vincent leroy
+** Last update Fri Mar 07 18:24:41 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -69,7 +69,7 @@ typedef struct s_function
 
 bool exec_program(t_option *opt);
 bool exec_ftrace(t_option *opt);
-int get_off(unsigned long value);
+int CONST get_off(unsigned long value);
 void split_2_reg_opcode(unsigned char op, unsigned char *s, int *reg1, int *reg2);
 unsigned long get_addr_in_register(int reg, bool reg_64, struct user_regs_struct *regs);
 void catch_signal();
@@ -90,5 +90,8 @@ void pop_addr_to_stack();
 unsigned long front_addr_to_stack();
 void delete_stack();
 int size_of_stack();
+
+char* addr_to_name(unsigned long addr);
+void delete_elf_list();
 
 #endif /* !FTRACE_H_ */

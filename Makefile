@@ -5,7 +5,7 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Fri Feb 28 12:45:46 2014 vincent leroy
-## Last update Tue Mar 04 21:14:39 2014 vincent leroy
+## Last update Sat Mar 08 12:27:50 2014 vincent leroy
 ##
 
 SRC			= main.c \
@@ -21,15 +21,22 @@ SRC			= main.c \
 			  check_off_fp_call.c \
 			  check_2_reg_call.c \
 			  check_off_2_reg_call.c \
+			  addr_to_name.c \
 
 LIST		= stdlist
+
+ELF			= elf
 
 SYSCALL		= create_syscall
 
 CFLAGS		= -Wall -Wextra -Werror
 CFLAGS		+= -I$(LIST)
+CFLAGS		+= -I$(ELF)
 
 LDFLAGS		= -L$(LIST) -llist
+LDFLAGS		+= -L$(ELF) -laelf
+LDFLAGS		+= -Wl,-rpath=$(LIST),-rpath=$(ELF)
+LDFLAGS		+= -lelf
 
 NAME		= ftrace
 NAME_DEBUG	= $(NAME).debug
@@ -43,10 +50,13 @@ CC			= gcc
 
 MAKE		= make -C
 
-all: list syscall $(NAME)
+all: elf list syscall $(NAME)
+
+elf:
+	$(MAKE) $(ELF) shared
 
 list:
-	$(MAKE) $(LIST) static
+	$(MAKE) $(LIST) shared
 
 syscall:
 	$(MAKE) $(SYSCALL)
@@ -56,6 +66,7 @@ $(NAME): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(NAME)
 
 clean:
+	$(MAKE) $(ELF) clean
 	$(MAKE) $(LIST) clean
 	$(MAKE) $(SYSCALL) clean
 	$(RM) $(OBJ) $(OBJ_DEBUG) *.swp *~ *#
@@ -75,4 +86,4 @@ debug: $(OBJ_DEBUG)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: all clean fclean re debug
+.PHONY: all elf list syscall clean fclean re debug

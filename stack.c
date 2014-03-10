@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Mar 01 21:08:11 2014 vincent leroy
-** Last update Tue Mar 04 21:00:48 2014 vincent leroy
+** Last update Fri Mar 07 18:20:43 2014 vincent leroy
 */
 
 #include "ftrace.h"
@@ -17,7 +17,8 @@ void push_addr_to_stack(unsigned long addr)
 {
     if (stack == NULL)
         stack = list_create(NULL);
-    list_push_back(stack, (void*)addr);
+    addr_to_name(addr);
+    list_push_front(stack, (void*)addr);
 }
 
 void pop_addr_to_stack()
