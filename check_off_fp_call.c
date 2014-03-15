@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Mon Mar 03 15:26:37 2014 vincent leroy
-** Last update Tue Mar 04 20:58:00 2014 vincent leroy
+** Last update Wed Mar 12 18:02:53 2014 vincent leroy
 */
 
 #include <sys/ptrace.h>
@@ -24,7 +24,7 @@
  * 41 FF 5* XX
  */
 
-bool check_off_fp_call(t_prog *prog)
+unsigned long check_off_fp_call(t_prog *prog)
 {
     static const unsigned int size_of_off_call = sizeof(int) + 1;
     int off = get_off(prog->value);
@@ -33,7 +33,7 @@ bool check_off_fp_call(t_prog *prog)
     unsigned long addr;
 
     if (addr_in_reg == INVALID_ADDR)
-        return false;
+        return INVALID_ADDR;
 
     if ((prog->tab[1] & 0xF0) == 0x50 || (prog->tab[0] == 0x41 && (prog->tab[2] & 0xF0) == 0x50))
         off &= 0xFF;
@@ -43,9 +43,5 @@ bool check_off_fp_call(t_prog *prog)
     else
         addr = ptrace(PTRACE_PEEKTEXT, prog->pid, addr_in_reg + off, NULL);
 
-    if (addr == INVALID_ADDR)
-        return false;
-
-    push_addr_to_stack(addr);
-    return true;
+    return addr;
 }

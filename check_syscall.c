@@ -5,17 +5,17 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Mar 01 16:45:46 2014 vincent leroy
-** Last update Sat Mar 01 21:35:12 2014 vincent leroy
+** Last update Wed Mar 12 18:03:34 2014 vincent leroy
 */
 
 #include "ftrace.h"
 #include "syscall.h"
 
-bool check_syscall(t_prog *prog)
+unsigned long check_syscall(t_prog *prog)
 {
     if (prog->regs.rax > NB_SYSCALL)
-        return false;
+        return INVALID_ADDR;
 
     eprintf("syscall %016llx => %s\n", prog->regs.rip, tab_syscall[prog->regs.rax].name);
-    return true;
+    return 0;
 }

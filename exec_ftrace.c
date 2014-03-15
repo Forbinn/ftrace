@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Fri Mar 07 17:59:22 2014 vincent leroy
+** Last update Fri Mar 14 18:59:58 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -19,9 +19,9 @@
 
 int run;
 
-static bool do_nothing(t_prog *prog)
+unsigned long do_nothing(t_prog *prog)
 {
-    eprintf("I'm here %lx (rip = %llx)\n", prog->value, prog->regs.rip);
+    eprintf("call not treated for the moment %lx (rip = %llx)\n", prog->value, prog->regs.rip);
     (void)prog;
     return true;
 }
@@ -66,10 +66,27 @@ bool check_opcode(t_prog *prog)
         {ULONG_MAX, ULONG_MAX, NULL}
     };
     int i;
+    unsigned long addr;
 
     for (i = 0; op[i].function_to_call != NULL; ++i)
         if ((prog->value & op[i].mask) == op[i].opcode)
-            return (*op[i].function_to_call)(prog);
+        {
+            if ((addr = (*op[i].function_to_call)(prog)) == INVALID_ADDR)
+                return false;
+            else if (addr != 0) // 0 is return by ret and syscall
+            {
+                eprintf("call\tfrom %#016llx to %#016lx\n", prog->regs.rip, addr);
+                push_addr_to_stack(addr);
+            }
+            else
+            {
+                unsigned long tmp = ptrace(PTRACE_PEEKTEXT, prog->pid, prog->regs.rsp, NULL);
+                eprintf("ret\tfrom %#016llx to %#016lx\n", prog->regs.rip, tmp);
+                if (size_of_stack() > 0)
+                    pop_addr_to_stack();
+            }
+            return true;
+        }
 
     return true;
 }
@@ -123,9 +140,10 @@ bool exec_ftrace(t_option *opt)
     {
         if (ptrace(PTRACE_GETREGS, prog.pid, NULL, &prog.regs) == -1 && errno == ESRCH)
             break;
+
         prog.value = ptrace(PTRACE_PEEKTEXT, prog.pid, prog.regs.rip, NULL);
         if (!check_opcode(&prog))
-            eprintf("Canno't determine opcode: %016lx at %016llx\n", prog.value, prog.regs.rip);
+            eprintf("Canno't resolve call: %016lx at %016llx\n", prog.value, prog.regs.rip);
 
         ptrace(PTRACE_SINGLESTEP, prog.pid, NULL, NULL);
     }

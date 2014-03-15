@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Mon Mar 03 18:03:48 2014 vincent leroy
-** Last update Tue Mar 04 20:50:58 2014 vincent leroy
+** Last update Wed Mar 12 18:00:43 2014 vincent leroy
 */
 
 #include <sys/ptrace.h>
@@ -19,7 +19,7 @@
  * 43 FF 14 **
  */
 
-bool check_2_reg_call(t_prog *prog)
+unsigned long check_2_reg_call(t_prog *prog)
 {
     unsigned char s;
     int reg1;
@@ -33,12 +33,8 @@ bool check_2_reg_call(t_prog *prog)
     unsigned long addr_in_reg2 = get_addr_in_register(reg2, reg2_64, &prog->regs);
 
     if (addr_in_reg1 == INVALID_ADDR || addr_in_reg2 == INVALID_ADDR)
-        return false;
+        return INVALID_ADDR;
 
     unsigned long addr = ptrace(PTRACE_PEEKTEXT, prog->pid, addr_in_reg1 + (s * addr_in_reg2), NULL);
-    if (addr == INVALID_ADDR)
-        return false;
-
-    push_addr_to_stack(addr);
-    return true;
+    return addr;
 }

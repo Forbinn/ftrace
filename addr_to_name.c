@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Mar 07 18:19:31 2014 vincent leroy
-** Last update Fri Mar 07 20:01:01 2014 vincent leroy
+** Last update Wed Mar 12 15:57:16 2014 vincent leroy
 */
 
 #include "ftrace.h"
@@ -16,20 +16,15 @@ static t_list *elf_list = NULL;
 
 static char* search_in_elf_list(unsigned long addr)
 {
-    t_elm *elm = elf_list->first;
+    t_elm *itr;
     char *name;
 
-    if (elm == NULL)
-        return NULL;
-
-    do
+    for (itr = list_begin(elf_list); itr != list_end(elf_list); list_inc(&itr))
     {
-        t_elf *elf = elm->data;
+        t_elf *elf = itr->data;
         if ((name = function_name_in_elf(elf, addr)) != NULL)
             return name;
-        elm = elm->next;
     }
-    while (elm != elf_list->first);
 
     return NULL;
 }
