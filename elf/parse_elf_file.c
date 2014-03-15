@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:51:25 2014 vincent leroy
-** Last update Sat Mar 08 16:41:51 2014 vincent leroy
+** Last update Thu Mar 13 20:46:13 2014 vincent leroy
 */
 
 #include <string.h>
@@ -30,8 +30,6 @@ static void fill_elf_data(t_elf *elf, Elf_Scn *scn, size_t shstrndx)
         elf->data.dynstr = elf_getdata(scn, NULL);
     else if (strcmp(name, ".dynsym") == 0)
         elf->data.dynsym = elf_getdata(scn, NULL);
-    else if (strcmp(name, ".dynamic") == 0)
-        elf->data.dynamic = elf_getdata(scn, NULL);
     else if (strcmp(name, ".rel.dyn") == 0)
         elf->data.rel_dyn = elf_getdata(scn, NULL);
     else if (strcmp(name, ".rel.plt") == 0)
@@ -40,6 +38,11 @@ static void fill_elf_data(t_elf *elf, Elf_Scn *scn, size_t shstrndx)
         elf->data.rela_dyn = elf_getdata(scn, NULL);
     else if (strcmp(name, ".rela.plt") == 0)
         elf->data.rela_plt = elf_getdata(scn, NULL);
+    else if (strcmp(name, ".plt") == 0)
+    {
+        elf->plt_begin = shdr.sh_addr;
+        elf->plt_end = elf->plt_begin + shdr.sh_size;
+    }
 }
 
 bool parse_elf_file(t_elf *elf)
@@ -52,6 +55,9 @@ bool parse_elf_file(t_elf *elf)
 
     while ((scn = elf_nextscn(elf->elf, scn)) != NULL)
         fill_elf_data(elf, scn, shstrndx);
+
+    if ((elf->function_map = list_create(NULL)) == NULL)
+        return false;
 
     return true;
 }

@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:41:54 2014 vincent leroy
-** Last update Mon Mar 10 16:15:22 2014 vincent leroy
+** Last update Wed Mar 12 15:34:06 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 
 #include "aelf.h"
 
-t_elf* open_elf_file(char *file, bool resolve_dependency)
+t_elf* open_elf_file(char *file)
 {
     t_elf *elf;
 
@@ -31,10 +31,7 @@ t_elf* open_elf_file(char *file, bool resolve_dependency)
             {
                 if (elf_kind(elf->elf) == ELF_K_ELF)
                     if (parse_elf_file(elf))
-                    {
-                        dependency_in_elf(elf, resolve_dependency);
                         return elf;
-                    }
 
                 elf_end(elf->elf);
             }
@@ -47,6 +44,15 @@ t_elf* open_elf_file(char *file, bool resolve_dependency)
     return NULL;
 }
 
+static void delete_function(t_function *function)
+{
+    if (function == NULL)
+        return ;
+
+    free(function->name);
+    free(function);
+}
+
 void delete_elf(t_elf *elf)
 {
     if (elf == NULL)
@@ -55,6 +61,6 @@ void delete_elf(t_elf *elf)
     elf_end(elf->elf);
     close(elf->fd);
     free(elf->filename);
-    list_delete(elf->dep_list, NULL, NULL);
+    list_delete(elf->function_map, NULL, (freedata)&delete_function);
     free(elf);
 }

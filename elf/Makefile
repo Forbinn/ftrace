@@ -5,12 +5,11 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Tue Mar 04 21:40:15 2014 vincent leroy
-## Last update Sat Mar 08 13:17:22 2014 vincent leroy
+## Last update Wed Mar 12 12:10:02 2014 vincent leroy
 ##
 
 SRC			= open_elf_file.c \
 			  parse_elf_file.c \
-			  dependency_in_elf.c \
 			  function_name_in_elf.c \
 
 NAME_SHARED	= libaelf.so
