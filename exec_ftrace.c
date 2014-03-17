@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Mon Mar 17 21:04:01 2014 vincent leroy
+** Last update Mon Mar 17 22:15:32 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -15,6 +15,7 @@
 #include <string.h>
 #include <errno.h>
 #include <limits.h>
+#include <sys/time.h>
 
 #include "ftrace.h"
 #include "read_proc_maps.h"
@@ -80,7 +81,9 @@ static bool check_opcode(t_prog *prog, t_proc *proc)
                 //eprintf("call\tfrom %#016llx to %#016lx", prog->regs.rip, addr);
                 //eprintf(" (%s => %s)", addr_to_file(proc, prog->regs.rip), addr_to_file(proc, addr));
                 //eprintf(" (%s)", addr_to_name(proc, addr));
-                eprintf("%#016lx => %-50s (%s)", addr, addr_to_name(proc, addr), addr_to_file(proc, addr));
+                char *name = addr_to_name(proc, addr);
+                char *file = addr_to_file(proc, addr);
+                eprintf("%#016lx => %-50s (%s)", addr, name, file);
                 eprintf("\n");
 
                 push_addr_to_stack(addr);
