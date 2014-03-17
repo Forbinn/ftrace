@@ -5,28 +5,30 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Fri Mar 14 18:59:58 2014 vincent leroy
+** Last update Mon Mar 17 21:04:01 2014 vincent leroy
 */
 
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <limits.h>
 
 #include "ftrace.h"
+#include "read_proc_maps.h"
 
 int run;
 
-unsigned long do_nothing(t_prog *prog)
+static unsigned long do_nothing(t_prog *prog)
 {
     eprintf("call not treated for the moment %lx (rip = %llx)\n", prog->value, prog->regs.rip);
     (void)prog;
     return true;
 }
 
-bool check_opcode(t_prog *prog)
+static bool check_opcode(t_prog *prog, t_proc *proc)
 {
     static const t_opcode op[] = {
         //{0x000000000000050FUL, 0x000000000000FFFFUL, &check_syscall},         // syscall
@@ -75,13 +77,18 @@ bool check_opcode(t_prog *prog)
                 return false;
             else if (addr != 0) // 0 is return by ret and syscall
             {
-                eprintf("call\tfrom %#016llx to %#016lx\n", prog->regs.rip, addr);
+                //eprintf("call\tfrom %#016llx to %#016lx", prog->regs.rip, addr);
+                //eprintf(" (%s => %s)", addr_to_file(proc, prog->regs.rip), addr_to_file(proc, addr));
+                //eprintf(" (%s)", addr_to_name(proc, addr));
+                eprintf("%#016lx => %-50s (%s)", addr, addr_to_name(proc, addr), addr_to_file(proc, addr));
+                eprintf("\n");
+
                 push_addr_to_stack(addr);
             }
             else
             {
-                unsigned long tmp = ptrace(PTRACE_PEEKTEXT, prog->pid, prog->regs.rsp, NULL);
-                eprintf("ret\tfrom %#016llx to %#016lx\n", prog->regs.rip, tmp);
+                //unsigned long tmp = ptrace(PTRACE_PEEKTEXT, prog->pid, prog->regs.rsp, NULL);
+                //eprintf("ret\tfrom %#016llx to %#016lx\n", prog->regs.rip, tmp);
                 if (size_of_stack() > 0)
                     pop_addr_to_stack();
             }
@@ -89,6 +96,25 @@ bool check_opcode(t_prog *prog)
         }
 
     return true;
+}
+
+static bool wait_for_start(t_proc *proc, t_prog *prog)
+{
+    bool ok = false;
+    t_elf *elf = list_user_data(proc->elf_list);
+
+    while (!ok && waitpid(prog->pid, NULL, WUNTRACED) != -1 && run)
+    {
+        if (ptrace(PTRACE_GETREGS, prog->pid, NULL, &prog->regs) == -1 && errno == ESRCH)
+            break;
+
+        if (prog->regs.rip >= elf->file_begin && prog->regs.rip < elf->file_end)
+            ok = true;
+
+        ptrace(PTRACE_SINGLESTEP, prog->pid, NULL, NULL);
+    }
+
+    return ok;
 }
 
 int CONST get_off(unsigned long value)
@@ -131,10 +157,37 @@ bool exec_ftrace(t_option *opt)
 {
     int status;
     t_prog prog;
+    t_proc proc;
+
+    memset(&prog, 0, sizeof(t_prog));
+    memset(&proc, 0, sizeof(t_proc));
 
     run = 1;
     prog.pid = opt->pid;
+    proc.pid = opt->pid;
+
     catch_signal();
+
+    if (!read_executable(&proc, opt->pathprogname))
+    {
+        eprintf("Unable to read executable file: %m\n");
+        return false;
+    }
+
+    if (!wait_for_start(&proc, &prog))
+        return false;
+
+    if (!run)
+    {
+        delete_proc(&proc);
+        return true;
+    }
+
+    if (!read_proc_maps(&proc))
+    {
+        eprintf("Unable to read proc file: %m\n");
+        return false;
+    }
 
     while (waitpid(prog.pid, &status, WUNTRACED) != -1 && run)
     {
@@ -142,11 +195,13 @@ bool exec_ftrace(t_option *opt)
             break;
 
         prog.value = ptrace(PTRACE_PEEKTEXT, prog.pid, prog.regs.rip, NULL);
-        if (!check_opcode(&prog))
+        if (!check_opcode(&prog, &proc))
             eprintf("Canno't resolve call: %016lx at %016llx\n", prog.value, prog.regs.rip);
 
         ptrace(PTRACE_SINGLESTEP, prog.pid, NULL, NULL);
     }
+
+    delete_proc(&proc);
 
     return true;
 }

@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 12:52:43 2014 vincent leroy
-** Last update Fri Mar 07 18:22:35 2014 vincent leroy
+** Last update Mon Mar 17 17:42:46 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -68,7 +68,8 @@ static bool get_pathprogname(t_option *opt)
 {
     if (access(opt->progname, X_OK) == 0)
     {
-        opt->pathprogname = opt->progname;
+        opt->pathprogname = realpath(opt->progname, NULL);
+        free(opt->progname);
         opt->progname = strdup(basename(opt->pathprogname));
         return true;
     }
@@ -149,7 +150,6 @@ int main(int ac, char **av)
         free(opt.argument);
     }
     delete_stack();
-    delete_elf_list();
 
     return 0;
 }

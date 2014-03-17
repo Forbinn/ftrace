@@ -5,47 +5,34 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Mar 07 18:19:31 2014 vincent leroy
-** Last update Wed Mar 12 15:57:16 2014 vincent leroy
+** Last update Mon Mar 17 21:00:51 2014 vincent leroy
 */
 
 #include "ftrace.h"
-#include "stdlist.h"
 #include "aelf.h"
 
-static t_list *elf_list = NULL;
-
-static char* search_in_elf_list(unsigned long addr)
+char* addr_to_name(t_proc *proc, unsigned long addr)
 {
-    t_elm *itr;
     char *name;
+    t_elf *elf = list_user_data(proc->elf_list);
+    t_elm *itr;
 
-    for (itr = list_begin(elf_list); itr != list_end(elf_list); list_inc(&itr))
-    {
-        t_elf *elf = itr->data;
+    if (addr >= elf->file_begin && addr < elf->file_end)
         if ((name = function_name_in_elf(elf, addr)) != NULL)
+            return name;
+
+    for (itr = list_begin(proc->elf_list); itr != list_end(proc->elf_list); list_inc(&itr))
+    {
+        t_shared_elf *shared_elf = itr->data;
+        if (shared_elf->elf == NULL)
+            continue;
+
+        if (addr < shared_elf->begin_addr || addr >= shared_elf->end_addr)
+            continue;
+
+        if ((name = function_name_in_elf(shared_elf->elf, addr - shared_elf->begin_addr)) != NULL)
             return name;
     }
 
     return NULL;
-}
-
-char* addr_to_name(unsigned long addr)
-{
-    char *name;
-
-    if (elf_list == NULL)
-        elf_list = list_create(NULL);
-
-    if ((name = search_in_elf_list(addr)) != NULL)
-        return name;
-
-    return NULL;
-}
-
-void delete_elf_list()
-{
-    if (elf_list == NULL)
-        return ;
-
-    list_delete(elf_list, NULL, (freedata)&delete_elf);
 }

@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:05:46 2014 vincent leroy
-** Last update Sat Mar 01 15:13:16 2014 vincent leroy
+** Last update Mon Mar 17 15:26:55 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/ptrace.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 #include "ftrace.h"
 
@@ -25,7 +26,7 @@ static bool attach_to_prog(t_option *opt)
     {
         eprintf("Unable to attach the process ");
         if (opt->progname != NULL)
-            eprintf("%s", opt->progname);
+            eprintf("'%s'", opt->progname);
         else
             eprintf("%d", opt->pid);
         eprintf(" %m\n");
@@ -47,6 +48,21 @@ static bool detach_to_prog(t_option *opt)
         eprintf(" %m\n");
         return false;
     }
+
+    return true;
+}
+
+static bool wait_execve(pid_t pid)
+{
+    waitpid(pid, NULL, WUNTRACED);
+
+    if (ptrace(PTRACE_SYSCALL, pid, NULL, NULL) == -1)
+        return false;
+
+    waitpid(pid, NULL, WUNTRACED);
+
+    if (ptrace(PTRACE_SYSCALL, pid, NULL, NULL) == -1)
+        return false;
 
     return true;
 }
@@ -73,7 +89,7 @@ bool exec_program(t_option *opt)
     {
         if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1)
         {
-            eprintf("Unable to follow program '%s': %m\n", opt->progname);
+            eprintf("Unable to trace program '%s': %m\n", opt->progname);
             exit(1);
         }
 
@@ -84,6 +100,12 @@ bool exec_program(t_option *opt)
         exit(1);
     }
 
+    usleep(1000); // Needed for wait the child to start
     ptrace(PTRACE_SETOPTIONS, opt->pid, NULL, PTRACE_O_EXITKILL);
+    if (!wait_execve(opt->pid))
+    {
+        eprintf("Error when waiting execve: %m\n");
+        return false;
+    }
     return exec_ftrace(opt);
 }

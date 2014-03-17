@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Thu Mar 13 21:05:04 2014 vincent leroy
+** Last update Mon Mar 17 17:46:10 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -14,6 +14,8 @@
 #include <sys/types.h>
 #include <sys/user.h>
 #include <stdbool.h>
+
+#include "read_proc_maps.h"
 
 #define ATTR(x, ...)     __attribute__((x, ##__VA_ARGS__))
 #define NORETURN        ATTR(noreturn)
@@ -88,7 +90,6 @@ unsigned long front_addr_to_stack();
 void delete_stack();
 int size_of_stack();
 
-char* addr_to_name(unsigned long addr);
-void delete_elf_list();
+char* addr_to_name(t_proc *proc, unsigned long addr);
 
 #endif /* !FTRACE_H_ */

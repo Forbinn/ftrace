@@ -5,7 +5,7 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Fri Feb 28 12:45:46 2014 vincent leroy
-## Last update Sat Mar 08 12:27:50 2014 vincent leroy
+## Last update Mon Mar 17 17:59:17 2014 vincent leroy
 ##
 
 SRC			= main.c \
@@ -22,6 +22,7 @@ SRC			= main.c \
 			  check_2_reg_call.c \
 			  check_off_2_reg_call.c \
 			  addr_to_name.c \
+			  read_proc_maps.c \
 
 LIST		= stdlist
 
