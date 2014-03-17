@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:37:27 2014 vincent leroy
-** Last update Thu Mar 13 20:42:49 2014 vincent leroy
+** Last update Mon Mar 17 13:23:10 2014 vincent leroy
 */
 
 #ifndef AELF_H_
@@ -40,6 +40,8 @@ typedef struct s_elf
     char            *filename;
     Elf             *elf;
     t_elf_data      data;
+    unsigned long   file_begin;
+    unsigned long   file_end;
     unsigned long   plt_begin;
     unsigned long   plt_end;
     t_list          *function_map;

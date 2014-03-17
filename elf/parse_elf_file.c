@@ -5,10 +5,11 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:51:25 2014 vincent leroy
-** Last update Thu Mar 13 20:46:13 2014 vincent leroy
+** Last update Mon Mar 17 13:24:12 2014 vincent leroy
 */
 
 #include <string.h>
+#include <sys/stat.h>
 
 #include "aelf.h"
 
@@ -43,6 +44,15 @@ static void fill_elf_data(t_elf *elf, Elf_Scn *scn, size_t shstrndx)
         elf->plt_begin = shdr.sh_addr;
         elf->plt_end = elf->plt_begin + shdr.sh_size;
     }
+    else if (strcmp(name, ".text") == 0)
+    {
+        struct stat st;
+        if (stat(elf->filename, &st) != 0)
+            return ;
+
+        elf->file_begin = shdr.sh_addr - shdr.sh_offset;
+        elf->file_end = elf->file_begin + st.st_size;
+    }
 }
 
 bool parse_elf_file(t_elf *elf)
@@ -55,6 +65,9 @@ bool parse_elf_file(t_elf *elf)
 
     while ((scn = elf_nextscn(elf->elf, scn)) != NULL)
         fill_elf_data(elf, scn, shstrndx);
+
+    if (elf->file_end == 0)
+        return false;
 
     if ((elf->function_map = list_create(NULL)) == NULL)
         return false;
