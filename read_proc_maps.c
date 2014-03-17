@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Mar 15 15:47:19 2014 vincent leroy
-** Last update Mon Mar 17 20:51:29 2014 vincent leroy
+** Last update Mon Mar 17 23:06:31 2014 vincent leroy
 */
 
 #include <string.h>
@@ -118,6 +118,7 @@ bool read_proc_maps(t_proc *proc)
             return false;
         }
 
+        //eprintf("%lx => %lx (%lx : %lx): %s\n", shared_elf->begin_addr, shared_elf->end_addr, shared_elf->offset, shared_elf->begin_addr - shared_elf->offset, shared_elf->filename);
         list_push_back(proc->elf_list, shared_elf);
     }
 

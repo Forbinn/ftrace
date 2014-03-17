@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Mon Mar 17 22:15:39 2014 vincent leroy
+** Last update Mon Mar 17 23:11:51 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -25,7 +25,7 @@
 #ifndef eprintf
 #include <stdio.h>
 
-#define eprintf(...)    fprintf(stdout, __VA_ARGS__)
+#define eprintf(...)    fprintf(stderr, __VA_ARGS__)
 #endif
 
 #define INVALID_ADDR    ((unsigned long)-1)

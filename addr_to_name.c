@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Mar 07 18:19:31 2014 vincent leroy
-** Last update Mon Mar 17 22:33:10 2014 vincent leroy
+** Last update Mon Mar 17 22:50:10 2014 vincent leroy
 */
 
 #include <sys/ptrace.h>
@@ -50,8 +50,8 @@ char* addr_to_name(t_proc *proc, unsigned long addr)
         if (addr < shared_elf->begin_addr || addr >= shared_elf->end_addr)
             continue;
 
-        unsigned long plt_begin = shared_elf->elf->plt_begin + shared_elf->begin_addr;
-        unsigned long plt_end = shared_elf->elf->plt_end + shared_elf->begin_addr;
+        unsigned long plt_begin = shared_elf->elf->plt_begin + shared_elf->begin_addr - shared_elf->offset;
+        unsigned long plt_end = shared_elf->elf->plt_end + shared_elf->begin_addr - shared_elf->offset;
         addr = check_for_plt(addr, plt_begin, plt_end, proc->pid);
 
         if ((name = function_name_in_elf(shared_elf->elf, addr - shared_elf->begin_addr)) != NULL)

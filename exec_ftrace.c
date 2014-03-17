@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Mon Mar 17 22:15:32 2014 vincent leroy
+** Last update Mon Mar 17 23:35:42 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -32,8 +32,8 @@ static unsigned long do_nothing(t_prog *prog)
 static bool check_opcode(t_prog *prog, t_proc *proc)
 {
     static const t_opcode op[] = {
-        //{0x000000000000050FUL, 0x000000000000FFFFUL, &check_syscall},         // syscall
-        //{0x000000000000340FUL, 0x000000000000FFFFUL, &check_syscall},         // sysenter
+        {0x000000000000050FUL, 0x000000000000FFFFUL, &check_syscall},           // syscall
+        {0x000000000000340FUL, 0x000000000000FFFFUL, &check_syscall},           // sysenter
         {0x00000000000000E8UL, 0x00000000000000FFUL, &check_call},              // standard call
         {0x00000000002494FFUL, 0x0000000000FFFFFFUL, &check_off_fp_call},       // call like *0x3d8(%rsp)
         {0x00000000000094FFUL, 0x000000000000FFFFUL, &check_off_2_reg_call},    // call like *0x6c10(%rsp,%rax,1)
@@ -76,24 +76,21 @@ static bool check_opcode(t_prog *prog, t_proc *proc)
         {
             if ((addr = (*op[i].function_to_call)(prog)) == INVALID_ADDR)
                 return false;
-            else if (addr != 0) // 0 is return by ret and syscall
+            else if (addr != 0) // 0 is return by syscall
             {
-                //eprintf("call\tfrom %#016llx to %#016lx", prog->regs.rip, addr);
-                //eprintf(" (%s => %s)", addr_to_file(proc, prog->regs.rip), addr_to_file(proc, addr));
-                //eprintf(" (%s)", addr_to_name(proc, addr));
+                if (op[i].function_to_call == &check_ret)
+                {
+                    if (size_of_stack() > 0)
+                        pop_addr_to_stack();
+                    return true;
+                }
+
                 char *name = addr_to_name(proc, addr);
                 char *file = addr_to_file(proc, addr);
-                eprintf("%#016lx => %-50s (%s)", addr, name, file);
-                eprintf("\n");
+
+                eprintf("%#016lx => %-50s (%s)\n", addr, name, file);
 
                 push_addr_to_stack(addr);
-            }
-            else
-            {
-                //unsigned long tmp = ptrace(PTRACE_PEEKTEXT, prog->pid, prog->regs.rsp, NULL);
-                //eprintf("ret\tfrom %#016llx to %#016lx\n", prog->regs.rip, tmp);
-                if (size_of_stack() > 0)
-                    pop_addr_to_stack();
             }
             return true;
         }
