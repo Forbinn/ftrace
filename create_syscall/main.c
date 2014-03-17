@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 #include <fcntl.h>
 
 const char *unistd_64[] = {
@@ -26,34 +25,38 @@ const char *unistd_32[] = {
     NULL
 };
 
-void aff_struct(int fdOut)
+void aff_struct(int fdOuth, int fdOutc)
 {
-    dprintf(fdOut, "typedef struct s_syscall\n");
-    dprintf(fdOut, "{\n");
-    dprintf(fdOut, "    int     op_code;\n");
-    dprintf(fdOut, "    int     use;\n");
-    dprintf(fdOut, "    char    *name;\n");
-    dprintf(fdOut, "} t_syscall;\n\n");
+    dprintf(fdOuth, "typedef struct s_syscall\n");
+    dprintf(fdOuth, "{\n");
+    dprintf(fdOuth, "    int     op_code;\n");
+    dprintf(fdOuth, "    int     use;\n");
+    dprintf(fdOuth, "    char    *name;\n");
+    dprintf(fdOuth, "} t_syscall;\n\n");
 
-    dprintf(fdOut, "t_syscall tab_syscall[] =\n");
-    dprintf(fdOut, "{\n");
+    dprintf(fdOuth, "extern t_syscall tab_syscall[];\n\n");
+
+
+    dprintf(fdOutc, "#include \"syscall.h\"\n\n");
+    dprintf(fdOutc, "t_syscall tab_syscall[] =\n");
+    dprintf(fdOutc, "{\n");
 }
 
-void aff_begin(int fdOut)
+void aff_begin(int fdOuth, int fdOutc)
 {
-    dprintf(fdOut, "#ifndef SYSCALL_H_\n");
-    dprintf(fdOut, "# define SYSCALL_H_\n\n");
+    dprintf(fdOuth, "#ifndef SYSCALL_H_\n");
+    dprintf(fdOuth, "# define SYSCALL_H_\n\n");
 
-    aff_struct(fdOut);
+    aff_struct(fdOuth, fdOutc);
 }
 
-void aff_end(int fdOut, int nb_syscall)
+void aff_end(int fdOuth, int fdOutc, int nb_syscall)
 {
-    dprintf(fdOut, "};\n\n");
+    dprintf(fdOutc, "};\n");
 
-    dprintf(fdOut, "#define NB_SYSCALL\t%d\n\n", nb_syscall);
+    dprintf(fdOuth, "#define NB_SYSCALL\t%d\n\n", nb_syscall);
 
-    dprintf(fdOut, "#endif /* !SYSCALL_H_ */\n");
+    dprintf(fdOuth, "#endif /* !SYSCALL_H_ */\n");
 }
 
 FILE* open_unistd_32()
@@ -81,7 +84,8 @@ FILE* open_unistd_64()
 int main(int ac, char **av)
 {
     FILE *fd;
-    int fdOut;
+    int fdOuth;
+    int fdOutc;
     char buff[4096];
     char *ptr;
     char *name;
@@ -114,14 +118,20 @@ int main(int ac, char **av)
         fprintf(stderr, "Unable to open file unistd.h\n");
         return 1;
     }
-    if ((fdOut = open("syscall.h", O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
+    if ((fdOuth = open("syscall.h", O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
     {
         fclose(fd);
-        fprintf(stderr, "Unable to open/create file syscall.h: %s\n", strerror(errno));
+        fprintf(stderr, "Unable to open/create file syscall.h: %m\n");
         return 1;
     }
+    if ((fdOutc = open("syscall.c", O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1)
+    {
+        fclose(fd);
+        close(fdOuth);
+        fprintf(stderr, "Unable to open/create file syscall.c: %m\n");
+    }
 
-    aff_begin(fdOut);
+    aff_begin(fdOuth, fdOutc);
 
     while (fgets(buff, 4095, fd) != NULL)
     {
@@ -132,14 +142,15 @@ int main(int ac, char **av)
             ptr = buff + 13;
             name = strtok(ptr, " \t");
             nb = strtok(NULL, " \t");
-            dprintf(fdOut, "  {%s, 0, \"%s\"},\n", nb, name);
+            dprintf(fdOutc, "  {%s, 0, \"%s\"},\n", nb, name);
             ++nb_syscall;
         }
     }
 
-    aff_end(fdOut, nb_syscall);
+    aff_end(fdOuth, fdOutc, nb_syscall);
 
     fclose(fd);
-    close(fdOut);
+    close(fdOuth);
+    close(fdOutc);
     return 0;
 }

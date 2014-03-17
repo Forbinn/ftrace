@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:37:27 2014 vincent leroy
-** Last update Mon Mar 17 23:31:26 2014 vincent leroy
+** Last update Mon Mar 17 23:40:23 2014 vincent leroy
 */
 
 #ifndef AELF_H_
@@ -58,5 +58,8 @@ void delete_elf(t_elf *elf);
 bool parse_elf_file(t_elf *elf);
 
 char* function_name_in_elf(t_elf *elf, unsigned long addr);
+
+bool open_dot_file(char *filename);
+void close_dot_file();
 
 #endif /* !AELF_H_ */

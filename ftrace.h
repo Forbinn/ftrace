@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Mon Mar 17 23:11:51 2014 vincent leroy
+** Last update Tue Mar 18 00:00:12 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -91,5 +91,9 @@ void delete_stack();
 int size_of_stack();
 
 char* addr_to_name(t_proc *proc, unsigned long addr);
+
+bool open_dot_file(char *filename);
+void add_call_in_dot(t_proc *proc, char *function);
+void close_dot_file();
 
 #endif /* !FTRACE_H_ */

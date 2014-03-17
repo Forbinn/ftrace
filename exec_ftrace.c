@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Mon Mar 17 23:35:42 2014 vincent leroy
+** Last update Tue Mar 18 00:00:19 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -19,6 +19,7 @@
 
 #include "ftrace.h"
 #include "read_proc_maps.h"
+#include "syscall.h"
 
 int run;
 
@@ -90,8 +91,17 @@ static bool check_opcode(t_prog *prog, t_proc *proc)
 
                 eprintf("%#016lx => %-50s (%s)\n", addr, name, file);
 
+                char buff[4096];
+                if (name != NULL)
+                    snprintf(buff, 4096, "%s\n%s", name, file);
+                else
+                    snprintf(buff, 4096, "NULL\n%s", file);
+
+                add_call_in_dot(proc, buff);
                 push_addr_to_stack(addr);
             }
+            else
+                add_call_in_dot(proc, tab_syscall[prog->regs.rax].name);
             return true;
         }
 
@@ -168,6 +178,18 @@ bool exec_ftrace(t_option *opt)
 
     catch_signal();
 
+    char filename[1024];
+    if (opt->progname == NULL)
+        snprintf(filename, 1024, "%d.dot", opt->pid);
+    else
+        snprintf(filename, 1024, "%s.dot", opt->progname);
+
+    if (!open_dot_file(filename))
+    {
+        eprintf("Unable to open file %m\n");
+        return false;
+    }
+
     if (!read_executable(&proc, opt->pathprogname))
     {
         eprintf("Unable to read executable file: %m\n");
@@ -202,6 +224,7 @@ bool exec_ftrace(t_option *opt)
     }
 
     delete_proc(&proc);
+    close_dot_file();
 
     return true;
 }
