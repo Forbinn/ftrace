@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Sat Mar 01 21:08:11 2014 vincent leroy
-** Last update Mon Mar 17 23:34:56 2014 vincent leroy
+** Last update Tue Mar 18 15:29:57 2014 vincent leroy
 */
 
 #include "ftrace.h"
@@ -34,7 +34,6 @@ void delete_stack()
 {
     if (stack == NULL)
         return ;
-    eprintf("Stack size at the end: %d\n", list_size(stack));
     list_delete(stack, NULL, NULL);
 }
 
