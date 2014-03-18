@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Tue Mar 18 00:00:19 2014 vincent leroy
+** Last update Tue Mar 18 15:09:48 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -19,7 +19,6 @@
 
 #include "ftrace.h"
 #include "read_proc_maps.h"
-#include "syscall.h"
 
 int run;
 
@@ -86,45 +85,21 @@ static bool check_opcode(t_prog *prog, t_proc *proc)
                     return true;
                 }
 
-                char *name = addr_to_name(proc, addr);
+                /*char *name = addr_to_name(proc, addr);
                 char *file = addr_to_file(proc, addr);
 
-                eprintf("%#016lx => %-50s (%s)\n", addr, name, file);
+                eprintf("%#016lx => %-50s (%s)\n", addr, name, file);*/
 
-                char buff[4096];
-                if (name != NULL)
-                    snprintf(buff, 4096, "%s\n%s", name, file);
-                else
-                    snprintf(buff, 4096, "NULL\n%s", file);
-
-                add_call_in_dot(proc, buff);
+                add_call_in_dot(proc, addr);
                 push_addr_to_stack(addr);
             }
             else
-                add_call_in_dot(proc, tab_syscall[prog->regs.rax].name);
+                add_syscall_in_dot(proc, prog->regs.rax);
+
             return true;
         }
 
     return true;
-}
-
-static bool wait_for_start(t_proc *proc, t_prog *prog)
-{
-    bool ok = false;
-    t_elf *elf = list_user_data(proc->elf_list);
-
-    while (!ok && waitpid(prog->pid, NULL, WUNTRACED) != -1 && run)
-    {
-        if (ptrace(PTRACE_GETREGS, prog->pid, NULL, &prog->regs) == -1 && errno == ESRCH)
-            break;
-
-        if (prog->regs.rip >= elf->file_begin && prog->regs.rip < elf->file_end)
-            ok = true;
-
-        ptrace(PTRACE_SINGLESTEP, prog->pid, NULL, NULL);
-    }
-
-    return ok;
 }
 
 int CONST get_off(unsigned long value)
@@ -163,6 +138,68 @@ unsigned long get_addr_in_register(int reg, bool reg_64, struct user_regs_struct
     }
 }
 
+static bool wait_for_start(t_proc *proc, t_prog *prog)
+{
+    int status;
+    bool ok = false;
+    t_elf *elf = list_user_data(proc->elf_list);
+
+    while (!ok && waitpid(prog->pid, &status, WUNTRACED) != -1 && run)
+    {
+        if (ptrace(PTRACE_GETREGS, prog->pid, NULL, &prog->regs) == -1 && errno == ESRCH)
+            break;
+
+        if (prog->regs.rip >= elf->file_begin && prog->regs.rip < elf->file_end)
+            ok = true;
+
+        ptrace(PTRACE_SINGLESTEP, prog->pid, NULL, NULL);
+    }
+
+    return ok;
+}
+
+static bool init_program(t_option *opt, t_proc *proc, t_prog *prog)
+{
+    char filename[BUFF_SIZE];
+
+    catch_signal();
+
+    if (opt->progname != NULL)
+        snprintf(filename, BUFF_SIZE, "%s.dot", opt->progname);
+    else
+        snprintf(filename, BUFF_SIZE, "%d.dot", opt->pid);
+
+    if (!open_dot_file(filename))
+    {
+        eprintf("Unable to open file %m\n");
+        return false;
+    }
+
+    if (!read_executable(proc, opt->pathprogname))
+    {
+        eprintf("Unable to read executable file: %m\n");
+        return false;
+    }
+
+    if (!opt->use_p_option)
+        if (!wait_for_start(proc, prog))
+            return false;
+
+    if (!read_proc_maps(proc))
+    {
+        eprintf("Unable to read proc file: %m\n");
+        return false;
+    }
+
+    if (!opt->use_p_option)
+    {
+        add_call_in_dot(proc, prog->regs.rip);
+        push_addr_to_stack(prog->regs.rip);
+    }
+
+    return true;
+}
+
 bool exec_ftrace(t_option *opt)
 {
     int status;
@@ -176,40 +213,8 @@ bool exec_ftrace(t_option *opt)
     prog.pid = opt->pid;
     proc.pid = opt->pid;
 
-    catch_signal();
-
-    char filename[1024];
-    if (opt->progname == NULL)
-        snprintf(filename, 1024, "%d.dot", opt->pid);
-    else
-        snprintf(filename, 1024, "%s.dot", opt->progname);
-
-    if (!open_dot_file(filename))
-    {
-        eprintf("Unable to open file %m\n");
+    if (!init_program(opt, &proc, &prog))
         return false;
-    }
-
-    if (!read_executable(&proc, opt->pathprogname))
-    {
-        eprintf("Unable to read executable file: %m\n");
-        return false;
-    }
-
-    if (!wait_for_start(&proc, &prog))
-        return false;
-
-    if (!run)
-    {
-        delete_proc(&proc);
-        return true;
-    }
-
-    if (!read_proc_maps(&proc))
-    {
-        eprintf("Unable to read proc file: %m\n");
-        return false;
-    }
 
     while (waitpid(prog.pid, &status, WUNTRACED) != -1 && run)
     {

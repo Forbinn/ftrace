@@ -21,3 +21,8 @@ create_syscall
 
 # Other
 syscall.h
+syscall.c
+image.png
+
+# Dot file
+*.dot

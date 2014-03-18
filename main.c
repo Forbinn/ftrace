@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 12:52:43 2014 vincent leroy
-** Last update Mon Mar 17 17:42:46 2014 vincent leroy
+** Last update Tue Mar 18 13:38:52 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -117,6 +117,7 @@ static bool parse_option(int ac, char **av, t_option *opt)
                 return false;
 
         opt->pid = atoi(av[2]);
+        opt->use_p_option = true;
         return get_progname_by_pid(opt);
     }
 
@@ -128,12 +129,13 @@ static bool parse_option(int ac, char **av, t_option *opt)
     int i;
     for (i = 1; i < ac; ++i)
         opt->argument[i - 1] = strdup(av[i]);
+    opt->use_p_option = false;
     return true;
 }
 
 int main(int ac, char **av)
 {
-    t_option opt = {NULL, NULL, NULL, 0};
+    t_option opt = {NULL, NULL, NULL, 0, false};
 
     if (!parse_option(ac, av, &opt))
         usage(av[0]);

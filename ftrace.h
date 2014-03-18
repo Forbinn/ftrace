@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Tue Mar 18 00:00:12 2014 vincent leroy
+** Last update Tue Mar 18 13:34:36 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -28,6 +28,10 @@
 #define eprintf(...)    fprintf(stderr, __VA_ARGS__)
 #endif
 
+#ifndef BUFF_SIZE
+#define BUFF_SIZE   1024
+#endif
+
 #define INVALID_ADDR    ((unsigned long)-1)
 
 extern int run; // Define in exec_ftrace.c
@@ -38,6 +42,7 @@ typedef struct s_option
     char    *pathprogname;
     char    **argument;
     pid_t   pid;
+    bool    use_p_option;
 } t_option;
 
 typedef union u_value
@@ -93,7 +98,8 @@ int size_of_stack();
 char* addr_to_name(t_proc *proc, unsigned long addr);
 
 bool open_dot_file(char *filename);
-void add_call_in_dot(t_proc *proc, char *function);
+void add_syscall_in_dot(t_proc *proc, int syscall);
+void add_call_in_dot(t_proc *proc, unsigned long addr);
 void close_dot_file();
 
 #endif /* !FTRACE_H_ */
