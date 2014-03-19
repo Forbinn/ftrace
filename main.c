@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 12:52:43 2014 vincent leroy
-** Last update Tue Mar 18 13:38:52 2014 vincent leroy
+** Last update Wed Mar 19 13:12:59 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -24,11 +24,11 @@ static void NORETURN usage(const char *progname)
 
 static bool get_progname_by_pid(t_option *opt)
 {
-    char buff[4096];
+    char buff[BUFF_SIZE];
     size_t size;
 
-    snprintf(buff, 4096, "/proc/%d/exe", opt->pid);
-    if ((size = readlink(buff, buff, 4096)) == (size_t)-1)
+    snprintf(buff, BUFF_SIZE, "/proc/%d/exe", opt->pid);
+    if ((size = readlink(buff, buff, BUFF_SIZE)) == (size_t)-1)
     {
         opt->progname = NULL;
         opt->pathprogname = NULL;
@@ -87,9 +87,9 @@ static bool get_pathprogname(t_option *opt)
     char *save = path;
     while ((token = strtok(path, ":")) != NULL)
     {
-        char buff[4096];
+        char buff[BUFF_SIZE];
 
-        snprintf(buff, 4096, "%s/%s", token, opt->progname);
+        snprintf(buff, BUFF_SIZE, "%s/%s", token, opt->progname);
         if (access(buff, X_OK) != -1)
         {
             opt->pathprogname = strdup(buff);
