@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Mon Mar 17 23:38:36 2014 vincent leroy
-** Last update Tue Mar 18 20:06:23 2014 vincent leroy
+** Last update Wed Mar 19 12:48:27 2014 vincent leroy
 */
 
 #include <unistd.h>
@@ -184,7 +184,7 @@ void close_dot_file()
 
     int nb = 0;
     t_elm *itr;
-    for (itr = list_begin(name_list); itr != list_end(name_list); list_inc(&itr), ++nb)
+    for (itr = list_begin(name_list); itr != list_end(name_list); list_inc(&itr))
     {
         t_list *list_library = itr->data;
         char *library = list_user_data(list_library);
@@ -200,10 +200,15 @@ void close_dot_file()
         for (itr2 = list_begin(list_library); itr2 != list_end(list_library); list_inc(&itr2))
         {
             t_dot_name *dot_name = itr2->data;
-            dprintf(fd, "\t\t\"%s\" -> \"%s\" [label=\"%d time%s\"];\n", dot_name->first_name, dot_name->second_name, dot_name->count, dot_name->count < 2 ? "" : "s");
+
+            dprintf(fd, "\t\t\"%s\" -> \"%s\"", dot_name->first_name, dot_name->second_name);
+            if (dot_name->count > 1)
+                dprintf(fd, " [label=\"%d times\"]", dot_name->count);
+            dprintf(fd, ";\n");
         }
 
         dprintf(fd, "\t}\n");
+        ++nb;
     }
 
     list_delete(name_list, NULL, (freedata)&delete_list_library);
