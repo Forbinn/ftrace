@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 17:08:03 2014 vincent leroy
-** Last update Tue Mar 18 15:09:48 2014 vincent leroy
+** Last update Wed Mar 19 19:30:53 2014 vincent leroy
 */
 
 #include <sys/types.h>
@@ -224,12 +224,15 @@ bool exec_ftrace(t_option *opt)
         prog.value = ptrace(PTRACE_PEEKTEXT, prog.pid, prog.regs.rip, NULL);
         if (!check_opcode(&prog, &proc))
             eprintf("Canno't resolve call: %016lx at %016llx\n", prog.value, prog.regs.rip);
+        if ((prog.value & 0xFFFF) == 0x050F && prog.regs.rax == 231)
+            sync_function_name_in_plt(&proc);
 
         ptrace(PTRACE_SINGLESTEP, prog.pid, NULL, NULL);
     }
 
-    delete_proc(&proc);
     close_dot_file();
+    delete_proc(&proc);
+    delete_list_function();
 
     return true;
 }

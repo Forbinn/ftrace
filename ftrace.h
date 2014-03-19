@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Fri Feb 28 15:16:59 2014 vincent leroy
-** Last update Tue Mar 18 13:34:36 2014 vincent leroy
+** Last update Wed Mar 19 19:30:45 2014 vincent leroy
 */
 
 #ifndef FTRACE_H_
@@ -71,6 +71,14 @@ typedef struct so_opcode
     op_callback     function_to_call;
 } t_opcode;
 
+typedef struct s_function
+{
+    unsigned long   addr;
+    char            *name;
+    bool            in_plt;
+    bool            is_syscall;
+} t_function;
+
 bool exec_program(t_option *opt);
 bool exec_ftrace(t_option *opt);
 int CONST get_off(unsigned long value);
@@ -95,7 +103,10 @@ unsigned long front_addr_to_stack();
 void delete_stack();
 int size_of_stack();
 
-char* addr_to_name(t_proc *proc, unsigned long addr);
+t_function* syscall_to_name(int syscall);
+t_function* addr_to_name(t_proc *proc, unsigned long addr);
+void sync_function_name_in_plt(t_proc *proc);
+void delete_list_function();
 
 bool open_dot_file(char *filename);
 void add_syscall_in_dot(t_proc *proc, int syscall);

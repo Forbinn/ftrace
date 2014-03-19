@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Mon Mar 17 23:38:36 2014 vincent leroy
-** Last update Wed Mar 19 12:48:27 2014 vincent leroy
+** Last update Wed Mar 19 19:30:42 2014 vincent leroy
 */
 
 #include <unistd.h>
@@ -14,29 +14,29 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "ftrace.h"
 #include "syscall.h"
+#include "ftrace.h"
 #include "stdlist.h"
 
 typedef struct s_dot_name
 {
-    char *first_name;
-    char *second_name;
+    t_function *func1;
+    t_function *func2;
     int count;
 } t_dot_name;
 
 static t_list *name_list;
 static int fd = -1;
 
-static t_dot_name* create_dot_name(char *name1, char *name2)
+static t_dot_name* create_dot_name(t_function *func1, t_function *func2)
 {
     t_dot_name *dot_name;
 
     if ((dot_name = calloc(1, sizeof(t_dot_name))) == NULL)
         return NULL;
 
-    dot_name->first_name = strdup(name1);
-    dot_name->second_name = strdup(name2);
+    dot_name->func1 = func1;
+    dot_name->func2 = func2;
     dot_name->count = 1;
 
     return dot_name;
@@ -47,26 +47,16 @@ static void delete_dot_name(t_dot_name *dot_name)
     if (dot_name == NULL)
         return ;
 
-    free(dot_name->first_name);
-    free(dot_name->second_name);
     free(dot_name);
 }
 
 static int compare_dot_file(t_dot_name *dot_name, t_dot_name *ref)
 {
-    if (strcmp(dot_name->first_name, ref->first_name) != 0)
+    if (strcmp(dot_name->func1->name, ref->func1->name) != 0)
         return 1;
-    if (strcmp(dot_name->second_name, ref->second_name) != 0)
+    if (strcmp(dot_name->func2->name, ref->func2->name) != 0)
         return -1;
     return 0;
-}
-
-static void addr_to_string(unsigned long addr, char *buff, int size, char *n)
-{
-    if (n == NULL)
-        snprintf(buff, size, "%#016lx", addr);
-    else
-        strncpy(buff, n, size);
 }
 
 static int compare_list(t_list *list, char *library)
@@ -105,11 +95,11 @@ static t_list* get_list_library(char *library)
     return list;
 }
 
-static void add_line_in_dot(char *name1, char *name2, char *library)
+static void add_line_in_dot(t_function *func1, t_function *func2, char *library)
 {
     t_list *list = get_list_library(library);
     t_dot_name *dot_name;
-    t_dot_name dot = {name1, name2, 0};
+    t_dot_name dot = {func1, func2, 0};
 
     dot_name = list_search_data(list, &dot, (cmp)&compare_dot_file);
     if (dot_name != NULL)
@@ -118,7 +108,7 @@ static void add_line_in_dot(char *name1, char *name2, char *library)
         return ;
     }
 
-    dot_name = create_dot_name(name1, name2);
+    dot_name = create_dot_name(func1, func2);
     if (dot_name == NULL)
         return ;
 
@@ -142,39 +132,29 @@ void add_syscall_in_dot(t_proc *proc, int syscall)
         return ;
 
     unsigned long addr = front_addr_to_stack();
-    char name[BUFF_SIZE];
-    char sys[BUFF_SIZE];
-    char *tmp = addr_to_name(proc, addr);
-    addr_to_string(addr, name, BUFF_SIZE, tmp);
+    t_function *func = addr_to_name(proc, addr);
+    t_function *sys = syscall_to_name(syscall);
 
-    snprintf(sys, BUFF_SIZE, "%s@syscall", tab_syscall[syscall].name);
-    add_line_in_dot(name, sys, "syscall");
+    add_line_in_dot(func, sys, "syscall");
 
     if (tab_syscall[syscall].use == 0)
     {
         tab_syscall[syscall].use = 1;
-        dprintf(fd, "\t\"%s\" [shape=rectangle,color=red];\n", sys);
+        dprintf(fd, "\t\"%s\" [shape=rectangle,color=red];\n", sys->name);
     }
 }
 
 void add_call_in_dot(t_proc *proc, unsigned long addr)
 {
-    char name1[BUFF_SIZE];
-    char name2[BUFF_SIZE];
-    char lib[BUFF_SIZE];
-
     if (size_of_stack() <= 0)
         return ;
 
     unsigned long a = front_addr_to_stack();
-    char *tmp = addr_to_name(proc, a);
-    addr_to_string(a, name1, BUFF_SIZE, tmp);
-    tmp = addr_to_file(proc, a);
-    addr_to_string(a, lib, BUFF_SIZE, tmp);
-    tmp = addr_to_name(proc, addr);
-    addr_to_string(addr, name2, BUFF_SIZE, tmp);
+    t_function *func1 = addr_to_name(proc, a);
+    char *lib = addr_to_file(proc, a);
+    t_function *func2 = addr_to_name(proc, addr);
 
-    add_line_in_dot(name1, name2, lib);
+    add_line_in_dot(func1, func2, lib);
 }
 
 void close_dot_file()
@@ -201,7 +181,7 @@ void close_dot_file()
         {
             t_dot_name *dot_name = itr2->data;
 
-            dprintf(fd, "\t\t\"%s\" -> \"%s\"", dot_name->first_name, dot_name->second_name);
+            dprintf(fd, "\t\t\"%s\" -> \"%s\"", dot_name->func1->name, dot_name->func2->name);
             if (dot_name->count > 1)
                 dprintf(fd, " [label=\"%d times\"]", dot_name->count);
             dprintf(fd, ";\n");
