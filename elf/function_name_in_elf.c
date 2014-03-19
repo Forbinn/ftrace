@@ -5,14 +5,12 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Wed Mar 05 12:26:21 2014 vincent leroy
-** Last update Fri Mar 14 18:55:22 2014 vincent leroy
+** Last update Wed Mar 19 14:18:06 2014 vincent leroy
 */
 
 #include <string.h>
 
 #include "aelf.h"
-
-//#define __TEST__
 
 static char* name_in_strtab(Elf_Data *strtab, Elf_Data *symtab, unsigned long addr)
 {
@@ -25,12 +23,8 @@ static char* name_in_strtab(Elf_Data *strtab, Elf_Data *symtab, unsigned long ad
 
     for (i = 0; gelf_getsym(symtab, i, &sym) != NULL; ++i)
     {
-#ifndef __TEST__
         if (sym.st_value != addr)
             continue;
-#else
-        (void)addr;
-#endif
 
         if (GELF_ST_TYPE(sym.st_info) != STT_FUNC)
             continue;
@@ -39,11 +33,7 @@ static char* name_in_strtab(Elf_Data *strtab, Elf_Data *symtab, unsigned long ad
         if (tab[0] == '\0' || sym.st_value == 0)
             continue;
 
-#ifndef __TEST__
         return strdup(tab);
-#else
-        eprintf("strtab => %#lx (%p) => [%s]\n", sym.st_value, tab, tab);
-#endif
     }
 
     return NULL;
@@ -73,12 +63,8 @@ static char* name_in_relocation(Elf_Data *dynsym, Elf_Data *dynstr, Elf_Data *re
         GElf_Addr offset = (is_rela ? rela.r_offset : rel.r_offset);
         Elf64_Xword word = (is_rela ? rela.r_info : rel.r_info);
 
-#ifndef __TEST__
         if (addr != offset)
             continue;
-#else
-        (void)addr;
-#endif
 
         if (gelf_getsym(dynsym, GELF_R_SYM(word), &sym) != NULL)
         {
@@ -86,20 +72,11 @@ static char* name_in_relocation(Elf_Data *dynsym, Elf_Data *dynstr, Elf_Data *re
                 continue;
 
             tab = dynstr->d_buf + sym.st_name;
-#ifndef __TEST__
             return strdup(tab);
-#else
-            eprintf("dynstr => %#lx (%p) => [%s]\n", offset, tab, tab);
-#endif
         }
     }
 
     return NULL;
-}
-
-static int compare_function_and_addr(t_function *func, unsigned long *addr)
-{
-    return func->addr == *addr ? 0 : 1;
 }
 
 char* function_name_in_elf(t_elf *elf, unsigned long addr)
@@ -117,11 +94,7 @@ char* function_name_in_elf(t_elf *elf, unsigned long addr)
         {elf->data.rela_plt, true, false},
         {NULL, false, true}
     };
-    t_function *func;
     char *name;
-
-    if ((func = list_search_data(elf->function_map, &addr, (cmp)&compare_function_and_addr)) != NULL)
-        return func->name;
 
     if ((name = name_in_strtab(elf->data.strtab, elf->data.symtab, addr)) == NULL)
     {
@@ -130,17 +103,6 @@ char* function_name_in_elf(t_elf *elf, unsigned long addr)
             if ((name = name_in_relocation(elf->data.dynsym, elf->data.dynstr, relocation[i].relocation, relocation[i].is_rela, addr)) != NULL)
                 break;
     }
-
-    if (name == NULL)
-        return NULL;
-
-    if ((func = calloc(1, sizeof(t_function))) == NULL)
-        return NULL;
-
-    func->addr = addr;
-    func->name = name;
-
-    list_push_back(elf->function_map, func);
 
     return name;
 }

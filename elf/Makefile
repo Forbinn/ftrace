@@ -5,7 +5,7 @@
 ## Login   <leroy_v@epitech.eu>
 ##
 ## Started on  Tue Mar 04 21:40:15 2014 vincent leroy
-## Last update Wed Mar 12 12:10:02 2014 vincent leroy
+## Last update Wed Mar 19 14:19:57 2014 vincent leroy
 ##
 
 SRC			= open_elf_file.c \
@@ -27,19 +27,12 @@ RM			= rm -f
 
 MAKE		= make -C
 
-LIST		= ../stdlist
-
 CFLAGS		= -Wall -Wextra -Werror
 CFLAGS		+= -O2
-CFLAGS		+= -I$(LIST)
 
 LDFLAGS		= -s
-LDFLAGS		+= -rpath=$(LIST) -L$(LIST) -llist
 
-all: list shared
-
-list:
-	$(MAKE) $(LIST) shared
+all: shared
 
 shared:	CFLAGS += -fPIC
 shared:	$(OBJ_SHARED)
@@ -50,7 +43,6 @@ static:	$(OBJ_STATIC)
 	$(RAN) $(NAME_STATIC)
 
 clean:
-	$(MAKE) $(LIST) clean
 	$(RM) $(OBJ_SHARED) $(OBJ_STATIC) *.swp *~ *#
 
 fclean:	clean
@@ -64,4 +56,4 @@ re:	fclean all
 %.static.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY:	all list shared static clean fclean re debug
+.PHONY:	all shared static clean fclean re

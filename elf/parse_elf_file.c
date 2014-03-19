@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:51:25 2014 vincent leroy
-** Last update Mon Mar 17 13:24:12 2014 vincent leroy
+** Last update Wed Mar 19 14:16:57 2014 vincent leroy
 */
 
 #include <string.h>
@@ -67,9 +67,6 @@ bool parse_elf_file(t_elf *elf)
         fill_elf_data(elf, scn, shstrndx);
 
     if (elf->file_end == 0)
-        return false;
-
-    if ((elf->function_map = list_create(NULL)) == NULL)
         return false;
 
     return true;

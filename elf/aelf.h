@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:37:27 2014 vincent leroy
-** Last update Mon Mar 17 23:40:23 2014 vincent leroy
+** Last update Wed Mar 19 14:17:09 2014 vincent leroy
 */
 
 #ifndef AELF_H_
@@ -13,14 +13,6 @@
 
 #include <gelf.h>
 #include <stdbool.h>
-
-#include "stdlist.h"
-
-#ifndef eprintf
-#include <stdio.h>
-
-#define eprintf(...)    fprintf(stdout, __VA_ARGS__)
-#endif
 
 typedef struct s_elf_data
 {
@@ -44,22 +36,12 @@ typedef struct s_elf
     unsigned long   file_end;
     unsigned long   plt_begin;
     unsigned long   plt_end;
-    t_list          *function_map;
 } t_elf;
-
-typedef struct s_function
-{
-    unsigned long   addr;
-    char            *name;
-} t_function;
 
 t_elf* open_elf_file(char *file);
 void delete_elf(t_elf *elf);
 bool parse_elf_file(t_elf *elf);
 
 char* function_name_in_elf(t_elf *elf, unsigned long addr);
-
-bool open_dot_file(char *filename);
-void close_dot_file();
 
 #endif /* !AELF_H_ */

@@ -5,7 +5,7 @@
 ** Login  <leroy_v@epitech.eu>
 **
 ** Started on  Tue Mar 04 21:41:54 2014 vincent leroy
-** Last update Wed Mar 12 15:34:06 2014 vincent leroy
+** Last update Wed Mar 19 14:17:06 2014 vincent leroy
 */
 
 #include <stdlib.h>
@@ -44,15 +44,6 @@ t_elf* open_elf_file(char *file)
     return NULL;
 }
 
-static void delete_function(t_function *function)
-{
-    if (function == NULL)
-        return ;
-
-    free(function->name);
-    free(function);
-}
-
 void delete_elf(t_elf *elf)
 {
     if (elf == NULL)
@@ -61,6 +52,5 @@ void delete_elf(t_elf *elf)
     elf_end(elf->elf);
     close(elf->fd);
     free(elf->filename);
-    list_delete(elf->function_map, NULL, (freedata)&delete_function);
     free(elf);
 }
